@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gerenciamento de Projetos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            width: 80%;
+            margin: auto;
+            overflow: hidden;
+        }
+
+        header {
+            background: #333;
+            color: #fff;
+            padding: 10px 0;
+            text-align: center;
+        }
+
+        h1 {
+            margin: 0;
+        }
+
+        .tabs {
+            display: flex;
+            cursor: pointer;
+            background: #e8e8e8;
+            margin: 20px 0;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            border: 1px solid #ccc;
+            border-bottom: none;
+            background: #f4f4f4;
+            transition: background 0.3s;
+        }
+
+        .tab:hover {
+            background: #ccc;
+        }
+
+        .tab.active {
+            background: #fff;
+            font-weight: bold;
+            border-bottom: 1px solid #fff;
+        }
+
+        .card {
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 2px 2px 10px #ccc;
+            display: none; /* Oculta por padrão */
+        }
+
+        .card.active {
+            display: block; /* Exibe apenas a aba ativa */
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-size: 18px;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        input[type="text"], input[type="password"], input[type="email"], textarea {
+            width: 100%;
+            padding: 12px 20px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            transition: 0.5s;
+        }
+
+        input[type="submit"], button {
+            width: 100%;
+            background-color: #333;
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover, button:hover {
+            background-color: #ccc;
+            color: black;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ccc;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Sistema de Gerenciamento de Projetos</h1>
+        <button onclick="logout()">Sair</button>
+    </header>
+
+    <div class="container">
+        <!-- Abas -->
+        <div class="tabs">
+            <div class="tab active" onclick="showTab('ongoing-projects')">Projetos em Andamento</div>
+            <div class="tab" onclick="showTab('register-project')">Cadastrar Novo Projeto</div>
+            <div class="tab" onclick="showTab('project-tasks')">Tarefas do Projeto</div>
+            <div class="tab" onclick="showTab('register-task')">Cadastrar Nova Tarefa</div>
+        </div>
+
+        <!-- Visão geral dos projetos em andamento -->
+        <div class="card active" id="ongoing-projects">
+            <h2>Projetos em Andamento</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nome do Projeto</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Projeto A</td>
+                        <td>Em progresso</td>
+                        <td>
+                            <button onclick="viewTasks('Projeto A')">Ver Tarefas</button>
+                            <button onclick="deleteProject('Projeto A')">Excluir</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Projeto B</td>
+                        <td>Concluído</td>
+                        <td>
+                            <button onclick="viewTasks('Projeto B')">Ver Tarefas</button>
+                            <button onclick="deleteProject('Projeto B')">Excluir</button>
+                        </td>
+                    </tr>
+                    <!-- Adicione mais projetos conforme necessário -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Cadastro de Novo Projeto -->
+        <div class="card" id="register-project">
+            <h2>Cadastrar Novo Projeto</h2>
+            <form action="#">
+                <div class="form-group">
+                    <label for="project-name">Nome do Projeto:</label>
+                    <input required type="text" id="project-name" name="project-name">
+                </div>
+                <div class="form-group">
+                    <label for="project-description">Descrição:</label>
+                    <textarea required id="project-description" name="project-description"></textarea>
+                </div>
+                <input type="submit" value="Cadastrar Projeto">
+            </form>
+        </div>
+
+        <!-- Tarefas do Projeto -->
+        <div class="card" id="project-tasks">
+            <h2>Tarefas do Projeto</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nome da Tarefa</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="task-list">
+                    <tr>
+                        <td>Tarefa 1</td>
+                        <td>Pendente</td>
+                        <td>
+                            <button onclick="editTask('Tarefa 1')">Editar</button>
+                            <button onclick="deleteTask('Tarefa 1')">Excluir</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Tarefa 2</td>
+                        <td>Concluída</td>
+                        <td>
+                            <button onclick="editTask('Tarefa 2')">Editar</button>
+                            <button onclick="deleteTask('Tarefa 2')">Excluir</button>
+                        </td>
+                    </tr>
+                    <!-- Adicione mais tarefas conforme necessário -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Cadastrar Nova Tarefa -->
+        <div class="card" id="register-task">
+            <h2>Cadastrar Nova Tarefa</h2>
+            <form action="#">
+                <div class="form-group">
+                    <label for="task-name">Nome da Tarefa:</label>
+                    <input required type="text" id="task-name" name="task-name">
+                </div>
+                <div class="form-group">
+                    <label for="task-status">Status:</label>
+                    <select id="task-status" name="task-status">
+                        <option value="pendente">Pendente</option>
+                        <option value="em progresso">Em progresso</option>
+                        <option value="concluída">Concluída</option>
+                    </select>
+                </div>
+                <input type="submit" value="Cadastrar Tarefa">
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function logout() {
+            // Lógica de logout (por exemplo, redirecionar para a página de login)
+            alert('Você saiu do sistema.');
+        }
+
+        function showTab(tabId) {
+            const cards = document.querySelectorAll('.card');
+            const tabs = document.querySelectorAll('.tab');
+
+            // Oculta todas as cartas e remove a classe ativa das abas
+            cards.forEach(card => {
+                card.classList.remove('active');
+            });
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Exibe a carta correspondente à aba clicada e adiciona a classe ativa à aba
+            document.getElementById(tabId).classList.add('active');
+            document.querySelector(`.tab[onclick="showTab('${tabId}')"]`).classList.add('active');
+        }
+
+        function viewTasks(projectName) {
+            // Lógica para visualizar tarefas de um projeto específico
+            alert('Visualizando tarefas do ' + projectName);
+        }
+
+        function deleteProject(projectName) {
+            // Lógica para excluir um projeto
+            alert('Projeto ' + projectName + ' excluído.');
+        }
+
+        function editTask(taskName) {
+            // Lógica para editar uma tarefa
+            alert('Editando ' + taskName);
+        }
+
+        function deleteTask(taskName) {
+            // Lógica para excluir uma tarefa
+            alert('Tarefa ' + taskName + ' excluída.');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciamento de Projetos - Construtora</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url('image/login.png');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        h2 {
+            color: #2c3e50;
+            text-align: center;
+            margin-top: 20px;
+        }
+        h3 {
+            color: #34495e;
+            margin-bottom: 10px;
+        }
+        #loginScreen {
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            color: white;
+        }
+        form {
+            margin: 20px auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+        form:hover {
+            transform: scale(1.02);
+        }
+        input, textarea {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin: 5px 0 15px;
+            border: 1px solid #bdc3c7;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            font-size: 16px;
+        }
+        button {
+            background-color: #2980b9;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s, transform 0.2s;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #3498db;
+            transform: scale(1.05);
+        }
+        #listaProjetos, #listaTarefas {
+            list-style: none;
+            padding: 0;
+        }
+        #listaProjetos li, #listaTarefas li {
+            padding: 15px;
+            margin: 10px 0;
+            background-color: #ffffff;
+            border: 1px solid #bdc3c7;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: box-shadow 0.3s;
+        }
+        #listaProjetos li:hover, #listaTarefas li:hover {
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        #dashboard {
+            padding: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .botao-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="loginScreen">
+        <h2>Login do Gerente de Projetos</h2>
+        <form id="loginForm" onsubmit="return login(event)">
+            <label for="username">Usuário:</label>
+            <input type="text" id="username" name="username" required>
+            <label for="password">Senha:</label>
+            <input type="password" id="password" name="password" required>
+            <div class="botao-container">
+                <button type="submit">Entrar</button>
+                <button type="button" onclick="mostrarTelaCadastroUsuario()">Cadastrar Novo Usuário</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="cadastroUsuario" style="display: none;">
+        <h2>Cadastrar Novo Usuário</h2>
+        <form id="formCadastro" onsubmit="return cadastrarUsuario(event)">
+            <label for="novoUsuario">Usuário:</label>
+            <input type="text" id="novoUsuario" required>
+            <label for="novaSenha">Senha:</label>
+            <input type="password" id="novaSenha" required>
+            <button type="submit">Cadastrar</button>
+            <button type="button" onclick="voltarParaLogin()">Voltar para Login</button>
+        </form>
+    </div>
+
+    <div id="dashboard" style="display: none;">
+        <h2>Painel dos procesos de Projetos</h2>
+        <h3>Projetos em Andamento</h3>
+        <ul id="listaProjetos"></ul>
+        <button onclick="mostrarTelaCadastroProjeto()">Novo Projeto</button>
+        <button onclick="logout()">Sair</button>
+    </div>
+
+    <div id="cadastroProjeto" style="display: none;">
+        <h2>Cadastrar Novo Projeto</h2>
+        <form id="formProjeto" onsubmit="return cadastrarProjeto(event)">
+            <label for="nomeProjeto">Nome do Projeto:</label>
+            <input type="text" id="nomeProjeto" required>
+            <label for="descricao">Descrição:</label>
+            <textarea id="descricao" required></textarea>
+            <label for="dataInicio">Data de Início:</label>
+            <input type="date" id="dataInicio" required>
+            <label for="dataFim">Data de Fim:</label>
+            <input type="date" id="dataFim" required>
+            <div class="action-buttons">
+                <button type="submit">Cadastrar</button>
+                <button type="button" onclick="voltarDashboard()">Cancelar</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="telaTarefas" style="display: none;">
+        <h2>Tarefas do Projeto <span id="nomeProjetoAtual"></span></h2>
+        <ul id="listaTarefas"></ul>
+        <form id="formTarefa" onsubmit="return adicionarTarefa(event)">
+            <label for="nomeTarefa">Nome da Tarefa:</label>
+            <input type="text" id="nomeTarefa" required>
+            <label for="dataInicioTarefa">Data de Início:</label>
+            <input type="date" id="dataInicioTarefa" required>
+            <label for="dataFimTarefa">Data de Fim:</label>
+            <input type="date" id="dataFimTarefa" required>
+            <div class="action-buttons">
+                <button type="submit">Adicionar Tarefa</button>
+                <button type="button" onclick="carregarTarefas(projetos.findIndex(projeto => projeto.nome === document.getElementById('nomeProjetoAtual').innerText))">Ver Tarefas Adicionadas</button>
+            </div>
+        </form>
+        <button onclick="voltarDashboard()">Voltar para os Projetos</button>
+    </div>
+
+    <script>
+        let usuarios = [{ username: "gerente", password: "123" }];
+        let projetos = [];
+        let tarefas = {};
+
+        function login(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            const usuario = usuarios.find(user => user.username === username && user.password === password);
+
+            if (usuario) {
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+                carregarProjetos();
+            } else {
+                alert("Credenciais inválidas");
+            }
+        }
+
+        function mostrarTelaCadastroUsuario() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('cadastroUsuario').style.display = 'block';
+        }
+
+        function cadastrarUsuario(event) {
+            event.preventDefault();
+            const novoUsuario = document.getElementById('novoUsuario').value;
+            const novaSenha = document.getElementById('novaSenha').value;
+
+            usuarios.push({ username: novoUsuario, password: novaSenha });
+            alert("Usuário cadastrado com sucesso!");
+            voltarParaLogin();
+        }
+
+        function voltarParaLogin() {
+            document.getElementById('cadastroUsuario').style.display = 'none';
+            document.getElementById('loginScreen').style.display = 'block';
+        }
+
+        function logout() {
+            document.getElementById('dashboard').style.display = 'none';
+            document.getElementById('loginScreen').style.display = 'block';
+        }
+
+        function carregarProjetos() {
+            const lista = document.getElementById('listaProjetos');
+            lista.innerHTML = '';
+            projetos.forEach((projeto, index) => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span>${projeto.nome}</span>
+                    <div class="action-buttons">
+                        <button onclick="mostrarTelaTarefas(${index})">Ver Tarefas</button>
+                        <button onclick="excluirProjeto(${index})">Excluir</button>
+                    </div>`;
+                lista.appendChild(li);
+            });
+        }
+
+        function mostrarTelaCadastroProjeto() {
+            document.getElementById('dashboard').style.display = 'none';
+            document.getElementById('cadastroProjeto').style.display = 'block';
+        }
+
+        function cadastrarProjeto(event) {
+            event.preventDefault();
+            const nomeProjeto = document.getElementById('nomeProjeto').value;
+            const descricao = document.getElementById('descricao').value;
+            const dataInicio = document.getElementById('dataInicio').value;
+            const dataFim = document.getElementById('dataFim').value;
+
+            projetos.push({ nome: nomeProjeto, descricao: descricao, dataInicio: dataInicio, dataFim: dataFim });
+            tarefas[nomeProjeto] = [];
+            voltarDashboard();
+        }
+
+        function excluirProjeto(index) {
+            projetos.splice(index, 1);
+            carregarProjetos();
+        }
+
+        function mostrarTelaTarefas(index) {
+            document.getElementById('dashboard').style.display = 'none';
+            document.getElementById('telaTarefas').style.display = 'block';
+            document.getElementById('nomeProjetoAtual').innerText = projetos[index].nome;
+            carregarTarefas(index);
+        }
+
+        function carregarTarefas(index) {
+            const lista = document.getElementById('listaTarefas');
+            lista.innerHTML = '';
+            const nomeProjeto = projetos[index].nome;
+            tarefas[nomeProjeto].forEach((tarefa, idx) => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span>${tarefa.nome} (Início: ${tarefa.dataInicio}, Fim: ${tarefa.dataFim})</span>
+                    <button onclick="excluirTarefa(${index}, ${idx})">Excluir Tarefa</button>`;
+                lista.appendChild(li);
+            });
+        }
+
+        function adicionarTarefa(event) {
+            event.preventDefault();
+            const nomeTarefa = document.getElementById('nomeTarefa').value;
+            const dataInicioTarefa = document.getElementById('dataInicioTarefa').value;
+            const dataFimTarefa = document.getElementById('dataFimTarefa').value;
+            const nomeProjeto = document.getElementById('nomeProjetoAtual').innerText;
+
+            tarefas[nomeProjeto].push({ nome: nomeTarefa, dataInicio: dataInicioTarefa, dataFim: dataFimTarefa });
+            carregarTarefas(projetos.findIndex(projeto => projeto.nome === nomeProjeto));
+        }
+
+        function excluirTarefa(projetoIndex, tarefaIndex) {
+            const nomeProjeto = projetos[projetoIndex].nome;
+            tarefas[nomeProjeto].splice(tarefaIndex, 1);
+            carregarTarefas(projetoIndex);
+        }
+
+        function voltarDashboard() {
+            document.getElementById('cadastroProjeto').style.display = 'none';
+            document.getElementById('telaTarefas').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+            carregarProjetos();
+        }
+    </script>
+</body>
+</html>

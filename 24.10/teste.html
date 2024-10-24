@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gerenciamento de Projetos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .login-card, .register-card {
+            width: 300px;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: #e8e8e8;
+            box-shadow: 2px 2px 10px #ccc;
+        }
+
+        .card-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .card-header .log {
+            margin: 0;
+            font-size: 24px;
+            color: black;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"], input[type="password"], input[type="email"] {
+            width: 100%;
+            padding: 12px 20px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            transition: 0.5s;
+        }
+
+        input[type="submit"] {
+            width: 100%;
+            background-color: #333;
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #ccc;
+            color: black;
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .toggle-link {
+            cursor: pointer;
+            color: blue;
+            text-decoration: underline;
+        }
+
+        .container {
+            width: 80%;
+            margin: auto;
+            overflow: hidden;
+        }
+
+        header {
+            background: #333;
+            color: #fff;
+            padding: 10px 0;
+            text-align: center;
+        }
+
+        h1 {
+            margin: 0;
+        }
+
+        .tabs {
+            display: flex;
+            cursor: pointer;
+            background: #e8e8e8;
+            margin: 20px 0;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            border: 1px solid #ccc;
+            border-bottom: none;
+            background: #f4f4f4;
+            transition: background 0.3s;
+        }
+
+        .tab:hover {
+            background: #ccc;
+        }
+
+        .tab.active {
+            background: #fff;
+            font-weight: bold;
+            border-bottom: 1px solid #fff;
+        }
+
+        .card {
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 2px 2px 10px #ccc;
+            display: none; /* Oculta por padrão */
+        }
+
+        .card.active {
+            display: block; /* Exibe apenas a aba ativa */
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ccc;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- Tela de Login -->
+        <div class="login-card">
+            <div class="card-header">
+                <div class="log">Login</div>
+            </div>
+            <form action="#" onsubmit="return false;">
+                <div class="form-group">
+                    <label for="username">Username:</label>
+                    <input required="" name="username" id="username" type="text">
+                </div>
+                <div class="form-group">
+                    <label for="password">Senha:</label>
+                    <input required="" name="password" id="password" type="password">
+                </div>
+                <div class="form-group">
+                    <input value="Login" type="submit" onclick="login()">
+                </div>
+            </form>
+            <div class="register-link">
+                <span class="toggle-link" onclick="toggleForm()">Não tem uma conta? Cadastre-se aqui</span>
+            </div>
+        </div>
+
+        <!-- Tela de Cadastro -->
+        <div class="register-card" style="display: none;">
+            <div class="card-header">
+                <div class="log">Cadastro</div>
+            </div>
+            <form action="#" onsubmit="return false;">
+                <div class="form-group">
+                    <label for="username">Username:</label>
+                    <input required="" class="form-control" name="username" id="username" type="text">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input required="" class="form-control" name="email" id="email" type="email">
+                </div>
+                <div class="form-group">
+                    <label for="password">Senha:</label>
+                    <input required="" class="form-control" name="password" id="password" type="password">
+                </div>
+                <div class="form-group">
+                    <label for="confirm-password">Confirma Senha:</label>
+                    <input required="" class="form-control" name="confirm-password" id="confirm-password" type="password">
+                </div>
+                <input type="submit" class="btn" value="Cadastrar" onclick="register()">
+            </form>
+            <div class="register-link">
+                <span class="toggle-link" onclick="toggleForm()">Já tem uma conta? Faça login aqui</span>
+            </div>
+        </div>
+
+        <!-- Tela Principal -->
+        <div class="main-screen" style="display: none;">
+            <header>
+                <h1>Sistema de Gerenciamento de Projetos</h1>
+                <button onclick="logout()">Sair</button>
+            </header>
+            <div class="container">
+                <div class="tabs">
+                    <div class="tab active" onclick="showTab('ongoing-projects')">Projetos em Andamento</div>
+                    <div class="tab" onclick="showTab('register-project')">Cadastrar Novo Projeto</div>
+                    <div class="tab" onclick="showTab('project-tasks')">Tarefas do Projeto</div>
+                    <div class="tab" onclick="showTab('register-task')">Cadastrar Nova Tarefa</div>
+                </div>
+                <div class="card active" id="ongoing-projects">
+                    <h2>Projetos em Andamento</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nome do Projeto</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Projetos cadastrados irão aparecer aqui -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Cadastro de Novo Projeto -->
+                <div class="card" id="register-project">
+                    <h2>Cadastrar Novo Projeto</h2>
+                    <form id="project-form" onsubmit="return addProject(event);">
+                        <div class="form-group">
+                            <label for="project-name">Nome do Projeto:</label>
+                            <input required type="text" id="project-name" name="project-name">
+                        </div>
+                        <div class="form-group">
+                            <label for="project-status">Status:</label>
+                            <select id="project-status" name="project-status">
+                                <option value="Em progresso">Em progresso</option>
+                                <option value="Concluído">Concluído</option>
+                            </select>
+                        </div>
+                        <input type="submit" value="Cadastrar Projeto">
+                    </form>
+                </div>
+                
+                <div class="card" id="project-tasks">
+                    <h2>Tarefas do Projeto</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nome da Tarefa</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="task-list">
+                            <!-- Tarefas serão inseridas dinamicamente aqui -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Cadastrar Nova Tarefa -->
+                <div class="card" id="register-task">
+                    <h2>Cadastrar Nova Tarefa</h2>
+                    <form id="task-form" onsubmit="return addTask(event);">
+                        <div class="form-group">
+                            <label for="task-name">Nome da Tarefa:</label>
+                            <input required type="text" id="task-name" name="task-name">
+                        </div>
+                        <div class="form-group">
+                            <label for="task-status">Status:</label>
+                            <select id="task-status" name="task-status">
+                                <option value="Em andamento">Em andamento</option>
+                                <option value="Concluído">Concluído</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="current-project">Projeto Atual:</label>
+                            <select id="current-project" name="current-project">
+                                <option value="">Selecione um projeto</option>
+                                <!-- Os projetos irão aparecer aqui -->
+                            </select>
+                        </div>
+                        <input type="submit" value="Cadastrar Tarefa">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let projects = []; // Armazena os projetos
+        let projectTasks = {}; // Armazena as tarefas dos projetos
+        let editingTask = null; // Para controle da edição da tarefa
+
+        function toggleForm() {
+            const loginCard = document.querySelector('.login-card');
+            const registerCard = document.querySelector('.register-card');
+            if (loginCard.style.display === 'none') {
+                loginCard.style.display = 'block';
+                registerCard.style.display = 'none';
+            } else {
+                loginCard.style.display = 'none';
+                registerCard.style.display = 'block';
+            }
+        }
+
+        function login() {
+            // Lógica de login (a ser implementada)
+            document.querySelector('.login-card').style.display = 'none';
+            document.querySelector('.main-screen').style.display = 'block';
+            loadProjects();
+        }
+
+        function logout() {
+            document.querySelector('.main-screen').style.display = 'none';
+            document.querySelector('.login-card').style.display = 'block';
+            projects = [];
+            projectTasks = {};
+            clearTables();
+        }
+
+        function register() {
+            // Lógica de cadastro (a ser implementada)
+            alert('Cadastro realizado com sucesso!');
+            toggleForm();
+        }
+
+        function loadProjects() {
+            const projectSelect = document.getElementById('current-project');
+            projectSelect.innerHTML = '';
+            projects.forEach((project, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = project.name;
+                projectSelect.appendChild(option);
+            });
+            viewProjects();
+        }
+
+        function viewProjects() {
+            const tbody = document.querySelector('#ongoing-projects tbody');
+            tbody.innerHTML = '';
+            projects.forEach((project, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${project.name}</td>
+                    <td>${project.status}</td>
+                    <td>
+                        <button onclick="deleteProject(${index})">Excluir</button>
+                        <button onclick="viewTasks(${index})">Ver Tarefas</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function addProject(event) {
+            event.preventDefault();
+            const projectName = document.getElementById('project-name').value;
+            const projectStatus = document.getElementById('project-status').value;
+            const project = { name: projectName, status: projectStatus };
+
+            projects.push(project);
+            projectTasks[projects.length - 1] = []; // Inicializa tarefas para o novo projeto
+            loadProjects();
+            document.getElementById('project-form').reset();
+        }
+
+        function deleteProject(index) {
+            projects.splice(index, 1);
+            delete projectTasks[index]; // Remove as tarefas relacionadas ao projeto excluído
+            loadProjects();
+        }
+
+        function viewTasks(index) {
+            const taskSelect = document.getElementById('current-project');
+            taskSelect.value = index;
+            document.getElementById('task-list').innerHTML = ''; // Limpa a lista de tarefas
+            const tasks = projectTasks[index] || [];
+            tasks.forEach(task => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${task.name}</td>
+                    <td>${task.status}</td>
+                    <td>
+                        <button onclick="editTask('${task.name}', ${index})">Editar</button>
+                        <button onclick="deleteTask('${task.name}', ${index})">Excluir</button>
+                    </td>
+                `;
+                document.getElementById('task-list').appendChild(row);
+            });
+        }
+
+        function addTask(event) {
+            event.preventDefault();
+            const taskName = document.getElementById('task-name').value;
+            const taskStatus = document.getElementById('task-status').value;
+            const currentProject = document.getElementById('current-project').value;
+
+            const task = {
+                name: taskName,
+                status: taskStatus
+            };
+
+            if (editingTask) {
+                // Atualiza a tarefa existente
+                const index = projectTasks[currentProject].indexOf(editingTask);
+                projectTasks[currentProject][index] = task;
+                editingTask = null; // Reseta a tarefa em edição
+            } else {
+                projectTasks[currentProject].push(task); // Adiciona nova tarefa
+            }
+
+            viewTasks(currentProject); // Atualiza a lista de tarefas
+            resetForm(); // Limpa os campos do formulário
+        }
+
+        function deleteTask(taskName, projectIndex) {
+            projectTasks[projectIndex] = projectTasks[projectIndex].filter(task => task.name !== taskName);
+            viewTasks(projectIndex);
+        }
+
+        function editTask(taskName, projectIndex) {
+            // Lógica para editar a tarefa
+            alert('Função de edição não implementada.');
+        }
+
+        function resetForm() {
+            document.getElementById('task-form').reset();
+        }
+
+        function showTab(tabId) {
+            document.querySelectorAll('.card').forEach(card => {
+                card.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.getElementById(tabId).classList.add('active');
+            document.querySelector(`.tab[onclick*="${tabId}"]`).classList.add('active');
+        }
+
+        function clearTables() {
+            document.querySelector('#ongoing-projects tbody').innerHTML = '';
+            document.getElementById('task-list').innerHTML = '';
+            const projectSelect = document.getElementById('current-project');
+            projectSelect.innerHTML = '<option value="">Selecione um projeto</option>';
+        }
+    </script>
+</body>
+</html>

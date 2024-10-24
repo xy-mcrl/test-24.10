@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gerenciamento de Projetos</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Tela de Login -->
+        <div class="login-card">
+            <div class="card-header">
+                <div class="log">Login</div>
+            </div>
+            <form action="#" onsubmit="return false;">
+                <div class="form-group">
+                    <label for="username">Username:</label>
+                    <input required="" name="username" id="username" type="text">
+                </div>
+                <div class="form-group">
+                    <label for="password">Senha:</label>
+                    <input required="" name="password" id="password" type="password">
+                </div>
+                <div class="form-group">
+                    <input value="Login" type="submit" onclick="login()">
+                </div>
+            </form>
+            <div class="register-link">
+                <span class="toggle-link" onclick="toggleForm()">Não tem uma conta? Cadastre-se aqui</span>
+            </div>
+        </div>
+
+        <!-- Tela de Cadastro -->
+        <div class="register-card" style="display: none;">
+            <div class="card-header">
+                <div class="log">Cadastro</div>
+            </div>
+            <form action="#" onsubmit="return false;">
+                <div class="form-group">
+                    <label for="username">Username:</label>
+                    <input required="" class="form-control" name="username" id="username" type="text">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input required="" class="form-control" name="email" id="email" type="email">
+                </div>
+                <div class="form-group">
+                    <label for="password">Senha:</label>
+                    <input required="" class="form-control" name="password" id="password" type="password">
+                </div>
+                <div class="form-group">
+                    <label for="confirm-password">Confirma Senha:</label>
+                    <input required="" class="form-control" name="confirm-password" id="confirm-password" type="password">
+                </div>
+                <input type="submit" class="btn" value="Cadastrar" onclick="register()">
+            </form>
+            <div class="register-link">
+                <span class="toggle-link" onclick="toggleForm()">Já tem uma conta? Faça login aqui</span>
+            </div>
+        </div>
+
+        <!-- Tela Principal -->
+        <div class="main-screen" style="display: none;">
+            <header>
+                <h1>Sistema de Gerenciamento de Projetos</h1>
+                <button onclick="logout()">Sair</button>
+            </header>
+            <div class="container">
+                <div class="tabs">
+                    <div class="tab active" onclick="showTab('ongoing-projects')">Projetos em Andamento</div>
+                    <div class="tab" onclick="showTab('register-project')">Cadastrar Novo Projeto</div>
+                    <div class="tab" onclick="showTab('project-tasks')">Tarefas do Projeto</div>
+                    <div class="tab" onclick="showTab('register-task')">Cadastrar Nova Tarefa</div>
+                </div>
+                <div class="card active" id="ongoing-projects">
+                    <h2>Projetos em Andamento</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nome do Projeto</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Projetos cadastrados irão aparecer aqui -->
+                        </tbody>
+                    </table>
+                </div>
+                
+        
+                <!-- Cadastro de Novo Projeto -->
+                    <div class="card" id="register-project">
+                        <h2>Cadastrar Novo Projeto</h2>
+                        <form id="project-form" onsubmit="return addProject(event);">
+                            <div class="form-group">
+                                <label for="project-name">Nome do Projeto:</label>
+                                <input required type="text" id="project-name" name="project-name">
+                            </div>
+                            <div class="form-group">
+                                <label for="project-description">Descrição:</label>
+                                <textarea required id="project-description" name="project-description" rows="4"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="start-date">Data de Início:</label>
+                                <input required type="date" id="start-date" name="start-date">
+                            </div>
+                            <div class="form-group">
+                                <label for="end-date">Data de Fim:</label>
+                                <input required type="date" id="end-date" name="end-date">
+                            </div>
+                            <div class="form-group">
+                                <label for="project-status">Status:</label>
+                                <select id="project-status" name="project-status">
+                                    <option value="Em progresso">Em progresso</option>
+                                    <option value="Concluído">Concluído</option>
+                                </select>
+                            </div>
+                            <input type="submit" value="Cadastrar Projeto">
+                        </form>
+                    </div>
+
+        
+                <div class="card" id="project-tasks">
+                    <h2>Tarefas do Projeto</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nome da Tarefa</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="task-list">
+                            <!-- Tarefas serão inseridas dinamicamente aqui -->
+                        </tbody>
+                    </table>
+                </div>
+                
+        
+                <!-- Cadastrar Nova Tarefa -->
+                <div class="card" id="register-task">
+                    <h2>Cadastrar Nova Tarefa</h2>
+                    <form id="task-form" onsubmit="return addTask(event);">
+                        <div class="form-group">
+                            <label for="task-name">Nome da Tarefa:</label>
+                            <input required type="text" id="task-name" name="task-name">
+                        </div>
+                        <div class="form-group">
+                            <label for="task-status">Status:</label>
+                            <select id="task-status" name="task-status">
+                                <option value="Pendente">Pendente</option>
+                                <option value="Em progresso">Em progresso</option>
+                                <option value="Concluída">Concluída</option>
+                            </select>
+                        </div>
+                        <!-- Campo oculto para armazenar o nome do projeto atual -->
+                        <input type="hidden" id="current-project" name="current-project">
+                        <input type="submit" value="Cadastrar Tarefa">
+                    </form>
+                </div>
+                
+
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
